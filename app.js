@@ -2,11 +2,15 @@ const express = require('express');
 
 const app = express();
 
-const favoris = [];
+const favorites = [];
 
-app.get('/myroute', (req, res) => {
-  console.log('handling /myroute');
-  res.send(items);
+app.get('/favorites', (req, res) => {
+  console.log('handling /favorites');
+  res.send(favorites);
+});
+
+app.post('/add-favorites', (req, res) => {
+  console.log(res);
 });
 
 app.listen(5000, () => console.log('server listening on port 5000'));
