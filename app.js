@@ -8,7 +8,7 @@ const router = express.Router();
 //   origin: 'http://localhost:3000',
 // };
 
-const favorites = [
+let favorites = [
   'recipe_0f6199b0c6a6283e57cf42056aaf6f1f',
   'recipe_7af45ab44d7a01aa241239c9cbac8884',
 ];
@@ -42,7 +42,9 @@ app.get('/favorites', (req, res) => {
 app.post('/favorites/:id', (req, res) => {
   if (req.body.isfavorite === true) {
     favorites.push(req.params.id);
-  } else favorites.remove(req.params.id);
+  } else favorites = favorites.filter((id) => id !== req.params.id);
+  console.log(favorites);
+  res.send('ok');
 });
 
 app.listen(5000, () => console.log('server listening on port 5000'));
