@@ -24,7 +24,9 @@ app.get('/favorites', (req, res) => {
 });
 
 router.post('/add-favorites', (req, res) => {
-  favorites.push(req.body.id);
+  if (req.body.isFavorite === true) {
+    favorites.push(req.body.id);
+  } else favorites.remove(req.body.id);
 });
 
 app.listen(5000, () => console.log('server listening on port 5000'));
