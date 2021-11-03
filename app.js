@@ -1,32 +1,48 @@
 // Importation
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+// const cors = require('cors');
 const router = express.Router();
 
-// Initialisation of the app
-const app = express();
-
-// add function to the app
-app.use('/', router);
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// const corsOptions = {
+//   origin: 'http://localhost:3000',
+// };
 
 const favorites = [
   'recipe_0f6199b0c6a6283e57cf42056aaf6f1f',
   'recipe_7af45ab44d7a01aa241239c9cbac8884',
 ];
 
+const cors = require('cors');
+
+const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',');
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (origin === undefined || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+// Initialisation of the app
+const app = express();
+app.use(cors(corsOptions));
+// add function to the app
+app.use('/', router);
+
+app.use(express.json());
+
 app.get('/favorites', (req, res) => {
   console.log('handling /favorites');
   res.send(favorites);
 });
 
-router.post('/add-favorites', (req, res) => {
-  if (req.body.isFavorite === true) {
-    favorites.push(req.body.id);
-  } else favorites.remove(req.body.id);
+app.post('/favorites/:id', (req, res) => {
+  if (req.body.isfavorite === true) {
+    favorites.push(req.params.id);
+  } else favorites.remove(req.params.id);
 });
 
 app.listen(5000, () => console.log('server listening on port 5000'));
