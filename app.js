@@ -12,6 +12,16 @@ const router = express.Router();
 // 'recipe_7af45ab44d7a01aa241239c9cbac8884',
 
 let favorites = [];
+let planning = [
+  {
+    date: 'Mercredi 03 2021',
+    lunch: true, 
+    diner: false, 
+    title: 'lasagne',
+    img: 'https://assets.afcdn.com/recipe/20200408/109520_w1024h1024c1cx1866cy2800.jpg',
+    id: 'recipe_0f6199b0c6a6283e57cf42056aaf6f1f',
+  },
+];
 
 const cors = require('cors');
 
@@ -34,6 +44,7 @@ app.use('/', router);
 
 app.use(express.json());
 
+// FAVORITES
 app.get('/favorites', (req, res) => {
   console.log('handling /favorites');
   res.send(favorites);
@@ -45,6 +56,25 @@ app.post('/favorites/:id', (req, res) => {
   } else favorites = favorites.filter((id) => id !== req.params.id);
   console.log(favorites);
   res.send('ok');
+});
+
+// PLANNING
+
+app.get('/planning', (req, res) => {
+  console.log('On planning');
+  res.send(planning);
+});
+
+app.post('/addtoplanning/', (req, res) => {
+  planning.push({
+    id: req.body.id,
+    date: req.body.date, 
+    lunch: req.body.lunch,
+    diner: req.body.diner, 
+    img: req.body.image, 
+    title: req.body.title
+  })
+  console.log(planning);
 });
 
 app.listen(5000, () => console.log('server listening on port 5000'));
