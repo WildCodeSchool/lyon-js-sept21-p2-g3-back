@@ -15,8 +15,8 @@ let favorites = [];
 let planning = [
   {
     date: 'Mercredi 03 2021',
-    lunch: true, 
-    diner: false, 
+    lunch: true,
+    diner: false,
     title: 'lasagne',
     img: 'https://assets.afcdn.com/recipe/20200408/109520_w1024h1024c1cx1866cy2800.jpg',
     id: 'recipe_0f6199b0c6a6283e57cf42056aaf6f1f',
@@ -68,12 +68,12 @@ app.get('/planning', (req, res) => {
 app.post('/addtoplanning/', (req, res) => {
   planning.push({
     id: req.body.id,
-    date: req.body.date, 
+    date: req.body.date,
     lunch: req.body.lunch,
-    diner: req.body.diner, 
-    img: req.body.image, 
-    title: req.body.title
-  })
+    diner: req.body.diner,
+    img: req.body.image,
+    title: req.body.title,
+  });
   console.log(planning);
 });
 
