@@ -59,13 +59,10 @@ const addIngredients = (ingredients) => {
   // }
 };
 
-const removeUnity = (ingredient) => {
+const removeIngredients = (ingredient) => {
 
 }
 
-const addUnity = (ingredient) => {
-
-}
 
 const cors = require('cors');
 
@@ -121,6 +118,11 @@ app.post('/addtoplanning/', (req, res) => {
   });
   addIngredients(req.body.ingredients);
   console.log('listIngredients', listIngredients);
+});
+
+app.get('/shopping-list', (req, res) => {
+  console.log('on shopping-list');
+  res.send(listIngredients);
 });
 
 app.listen(5000, () => console.log('server listening on port 5000'));
