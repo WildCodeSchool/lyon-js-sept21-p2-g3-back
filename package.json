@@ -2,9 +2,9 @@
   "name": "express-minimal-template",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "app2.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app2.js"
   },
   "repository": {
     "type": "git",
