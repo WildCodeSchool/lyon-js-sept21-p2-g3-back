@@ -49,19 +49,21 @@ CREATE TABLE `favorites` (
 	PRIMARY KEY (`user_id`, `id_recipe`)
 );
 
-INSERT INTO `favorites` (`user_id`, `id_recipe`) VALUES ('1', 'recipe_0f6199b0c6a6283e57cf42056aaf6f1f');
+INSERT INTO `favorites` (`user_id`, `id_recipe`, `image`, `label`) VALUES ('1', 'recipe_0f6199b0c6a6283e57cf42056aaf6f1f', 'https://www.edamam.com/food-img/4d6/4d651eaa8a353647746290c7a9b29d84.jpg', 'mon label');
 
 CREATE TABLE `planning` (
 	`user_id` INT NOT NULL, 
 	`date` DATE NOT NULL, 
     `lunch` BOOLEAN NOT NULL,
     `dinner` BOOLEAN NOT NULL,  
-	`id_recipe` VARCHAR(255) NOT NULL, 
+	`id_recipe` VARCHAR(255) NOT NULL,
+    `image` VARCHAR(1000) NOT NULL,  
+    `label` VARCHAR(255) NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES users(`id`), 
 	PRIMARY KEY (`user_id`, `date`, `lunch`, `dinner`)	
 );
 
-INSERT INTO planning (`user_id`, `date`, `lunch`, `dinner` , `id_recipe`) VALUES (1, '2021-11-16', true, false, 'recipe_0f6199b0c6a6283e57cf42056aaf6f1f');
+INSERT INTO planning (`user_id`, `date`, `lunch`, `dinner` , `id_recipe`, `image`, `label` ) VALUES (1, '2021-11-16', true, false, 'recipe_0f6199b0c6a6283e57cf42056aaf6f1f', 'https://www.edamam.com/food-img/4d6/4d651eaa8a353647746290c7a9b29d84.jpg', 'mon label');
 
 CREATE TABLE `suggestions` (
 	`date` DATE NOT NULL, 

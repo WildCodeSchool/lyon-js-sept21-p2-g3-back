@@ -99,8 +99,16 @@ planningRouter.post('/', (req, res) => {
   connection
     .promise()
     .query(
-      'INSERT INTO planning (user_id, date, lunch, dinner, id_recipe) VALUES (?,?,?,?,?)',
-      [1, req.body.date, req.body.lunch, req.body.diner, req.body.id]
+      'INSERT INTO planning (user_id, date, lunch, dinner, id_recipe, image, label) VALUES (?,?,?,?,?, ?,?)',
+      [
+        1,
+        req.body.date,
+        req.body.lunch,
+        req.body.diner,
+        req.body.id,
+        req.body.image,
+        req.body.label,
+      ]
     )
     .then(([results]) => {
       console.log('insert into planning', results);
@@ -109,6 +117,21 @@ planningRouter.post('/', (req, res) => {
     .catch((err) => {
       console.log(err);
       res.status(500).send('error when adding recipe to planning');
+    });
+});
+
+planningRouter.get('/', (req, res) => {
+  connection
+    .promise()
+    .query('SELECT * FROM planning')
+    .then(([results]) => {
+      console.log('select all from planning');
+      res.status(200).json(results);
+      res.status(200).send('get recipe from planning');
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send('error when get planning');
     });
 });
 
