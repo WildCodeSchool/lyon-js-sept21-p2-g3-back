@@ -25,16 +25,19 @@ let planning = [
   },
 ];
 
-let listIngredients = [  {
-  text: '7.7 oz (220 g) mozzarella cheese',
-  quantity: 7.699999809265137,
-  measure: 'ounce',
-  food: 'mozzarella cheese',
-  weight: 218.2913226552576,
-  foodCategory: 'Cheese',
-  foodId: 'food_acjhpy7bkl7a9qboztipaa2i9e4m',
-  image: 'https://www.edamam.com/food-img/92d/92d92d4a4dfe8c025cea407c9ce764c3.jpg'
-}];
+let listIngredients = [
+  {
+    text: '7.7 oz (220 g) mozzarella cheese',
+    quantity: 7.699999809265137,
+    measure: 'ounce',
+    food: 'mozzarella cheese',
+    weight: 218.2913226552576,
+    foodCategory: 'Cheese',
+    foodId: 'food_acjhpy7bkl7a9qboztipaa2i9e4m',
+    image:
+      'https://www.edamam.com/food-img/92d/92d92d4a4dfe8c025cea407c9ce764c3.jpg',
+  },
+];
 
 const addIngredients = (ingredients) => {
   // if (listIngredients.length === 0) {
@@ -43,26 +46,23 @@ const addIngredients = (ingredients) => {
   //     listIngredients.push(ingredient[i]);
   //   }
   // } else {
-    for (let newIng of ingredients) {
-      console.log('newIng', newIng)
-      let isInList = false;
-      for (let oldIng of listIngredients) {
-        if (newIng.foodId === oldIng.foodId) {
-          isInList = true;
-          oldIng.quantity += newIng.quantity;
-        }
-      }
-      if (!isInList) {
-        listIngredients.push(newIng);
+  for (let newIng of ingredients) {
+    console.log('newIng', newIng);
+    let isInList = false;
+    for (let oldIng of listIngredients) {
+      if (newIng.foodId === oldIng.foodId) {
+        isInList = true;
+        oldIng.quantity += newIng.quantity;
       }
     }
+    if (!isInList) {
+      listIngredients.push(newIng);
+    }
+  }
   // }
 };
 
-const removeIngredients = (ingredient) => {
-
-}
-
+const removeIngredients = (ingredient) => {};
 
 const cors = require('cors');
 
