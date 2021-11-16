@@ -54,14 +54,14 @@ INSERT INTO `favorites` (`user_id`, `id_recipe`) VALUES ('1', 'recipe_0f6199b0c6
 CREATE TABLE `planning` (
 	`user_id` INT NOT NULL, 
 	`date` DATE NOT NULL, 
-	`time` VARCHAR(255) NOT NULL,
+    `lunch` BOOLEAN NOT NULL,
+    `dinner` BOOLEAN NOT NULL,  
 	`id_recipe` VARCHAR(255) NOT NULL, 
 	FOREIGN KEY (`user_id`) REFERENCES users(`id`), 
-	PRIMARY KEY (`user_id`, `date`, `time`)	
+	PRIMARY KEY (`user_id`, `date`, `lunch`, `dinner`)	
 );
 
-INSERT INTO planning (`user_id`, `date`, `time`, `id_recipe`) VALUES (1, '2021-11-16', 'lunch', 'recipe_0f6199b0c6a6283e57cf42056aaf6f1f');
-INSERT INTO planning (`user_id`, `date`, `time`, `id_recipe`) VALUES (1, '2021-11-16', 'dinner', 'recipe_0f6199b0c6a6283e57cf42056aaf6f1f');
+INSERT INTO planning (`user_id`, `date`, `lunch`, `dinner` , `id_recipe`) VALUES (1, '2021-11-16', true, false, 'recipe_0f6199b0c6a6283e57cf42056aaf6f1f');
 
 CREATE TABLE `suggestions` (
 	`date` DATE NOT NULL, 

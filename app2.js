@@ -37,6 +37,9 @@ app.use(express.json());
 const favoritesRouter = express.Router();
 app.use('/favorites', favoritesRouter);
 
+const planningRouter = express.Router();
+app.use('/planning', planningRouter);
+
 // Favorites :
 //Get Favorites
 favoritesRouter.get('/', (req, res) => {
@@ -87,6 +90,25 @@ favoritesRouter.delete('/:id', (req, res) => {
     .catch((err) => {
       console.log(err);
       res.status(500).send('error when deleting favorite');
+    });
+});
+
+//Planning
+
+planningRouter.post('/', (req, res) => {
+  connection
+    .promise()
+    .query(
+      'INSERT INTO planning (user_id, date, lunch, dinner, id_recipe) VALUES (?,?,?,?,?)',
+      [1, req.body.date, req.body.lunch, req.body.diner, req.body.id]
+    )
+    .then(([results]) => {
+      console.log('insert into planning', results);
+      res.status(200).send('recipe insert into planning');
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send('error when adding recipe to planning');
     });
 });
 
