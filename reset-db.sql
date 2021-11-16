@@ -43,6 +43,8 @@ VALUES ('2021-11-16', 1, 'food_acjhpy7bkl7a9qboztipaa2i9e4m', '2');
 CREATE TABLE `favorites` (
 	`user_id` INT NOT NULL, 
 	`id_recipe` VARCHAR(255) NOT NULL, 
+    `image` VARCHAR(1000) NOT NULL, 
+    `label` VARCHAR(255) NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES users(`id`),
 	PRIMARY KEY (`user_id`, `id_recipe`)
 );

@@ -57,34 +57,37 @@ favoritesRouter.get('/', (req, res) => {
 
 favoritesRouter.post('/:id', (req, res) => {
   const id = req.params.id;
-  const isFavorite = req.body.isfavorite;
-  console.log(req.body.isfavorite);
-  if (isFavorite) {
-    connection
-      .promise()
-      .query('INSERT INTO favorites (user_id, id_recipe) VALUES (?,?)', [1, id])
-      .then(([results]) => {
-        res.status(200).send('favorites added');
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).send('error when adding favorite');
-      });
-  } else {
-    connection
-      .promise()
-      .query('DELETE FROM favorites WHERE user_id = ? AND id_recipe = ?', [
-        1,
-        id,
-      ])
-      .then(([results]) => {
-        res.status(204).send('favorites deleted');
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).send('error when deleting favorite');
-      });
-  }
+  const { image, label } = req.body;
+  console.log('post favorites', req.body);
+  connection
+    .promise()
+    .query(
+      'INSERT INTO favorites (user_id, id_recipe, image, label) VALUES (?, ?, ?, ?)',
+      [1, id, image, label]
+    )
+    .then(([results]) => {
+      console.log('add favorite : ', results);
+      res.status(200).send('favorites added');
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send('error when adding favorite');
+    });
+});
+
+favoritesRouter.delete('/:id', (req, res) => {
+  const id = req.params.id;
+  connection
+    .promise()
+    .query('DELETE FROM favorites WHERE id_recipe = ?', [id])
+    .then(([results]) => {
+      console.log('delete favorites :', results);
+      res.status(200).send('favorite deleted');
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send('error when deleting favorite');
+    });
 });
 
 app.listen(port, () => console.log(`server listening on port ${port}`));
