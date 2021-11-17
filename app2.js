@@ -157,27 +157,47 @@ shoppingListRouter.put('/', async (req, res) => {
     const [listsInDB] = await connection
       .promise()
       .query('SELECT * FROM listes');
-    console.log(listsInDB);
+    console.log('list in DB :', listsInDB);
     const [ingredientsInDB] = await connection
       .promise()
       .query('SELECT * FROM ingredients');
-    console.log(ingredientsInDB);
-    const newList = [];
-    const updateQuantityInList = [];
-    const newIngredients = [];
-    addToList(
-      newList,
-      listsInDB,
-      req.body.ingredients,
-      updateQuantityInList,
-      newIngredients
+    // console.log(ingredientsInDB);
+
+    const userIngredients = req.body.ingredients;
+    console.log(userIngredients);
+
+    const ingredientsToInsert = userIngredients.filter(
+      (i) => !ingredientsInDB.map((iDB) => iDB.id).includes(i.foodId)
     );
 
-    const ingredientsToInsert = newIngredients.filter(
-      (i) => !ingredientsInDB.map((iDB) => iDB.id).includes(i.id)
+    console.log('ingredientsToInsert', ingredientsToInsert);
+
+    const ingredientToInsertInList = userIngredients.filter(
+      (i) => !listsInDB.map((iDB) => iDB.id_ingredient).includes(i.foodId)
     );
-    console.log('new ingredients : ', newIngredients);
-    console.log('ingredients To Insert : ', ingredientsToInsert);
+
+    console.log('ingredient TO insert in List :', ingredientToInsertInList);
+
+    const updateQuantityInList = userIngredients.filter((i) =>
+      listsInDB.map((iDB) => iDB.id_ingredient).includes(i.foodId)
+    );
+
+    // const newList = [];
+    // const updateQuantityInList = [];
+    // const newIngredients = [];
+    // addToList(
+    //   newList,
+    //   listsInDB,
+    //   req.body.ingredients,
+    //   updateQuantityInList,
+    //   newIngredients
+    // );
+
+    // const ingredientsToInsert = newIngredients.filter(
+    //   (i) => !ingredientsInDB.map((iDB) => iDB.id).includes(i.id)
+    // );
+    // console.log('new ingredients : ', newIngredients);
+    // console.log('ingredients To Insert : ', ingredientsToInsert);
 
     await Promise.all(
       ingredientsToInsert.map((i) =>
@@ -185,28 +205,34 @@ shoppingListRouter.put('/', async (req, res) => {
           .promise()
           .query(
             'INSERT INTO ingredients (id, name, measure, category, image) VALUES (?, ?, ?, ?, ?)',
-            [i.id, i.name, i.measure, i.category, i.image]
+            [i.foodId, i.food, i.measure, i.foodCategory, i.image]
           )
       )
     );
 
     await Promise.all(
-      newList.map((i) =>
+      ingredientToInsertInList.map((i) =>
         connection
           .promise()
           .query(
             'INSERT INTO listes (date, user_id, id_ingredient, quantity) VALUES (?, ?, ?, ?)',
-            ['2021-11-16', 1, i.id_ingredient, i.quantity]
+            ['2021-11-16', 1, i.foodId, i.quantity]
           )
       )
     );
 
     await Promise.all(
       updateQuantityInList.map((i) => {
-        connection.promise.query(
-          'UPDATE listes SET quantity = ? WHERE id_ingredient = ?',
-          [i.quantity, i.id_ingredient]
-        );
+        const iInDB = listsInDB.filter((j) => j.id_ingredient === i.foodId);
+        console.log('iINDB HEEEEEELLLLO WORLD : ', iInDB[0].quantity);
+        const newQuantity = i.quantity + iInDB[0].quantity;
+        console.log('QUAAAAANTITY : ', newQuantity);
+        return connection
+          .promise()
+          .query('UPDATE listes SET quantity = ? WHERE id_ingredient = ?', [
+            i.quantity + iInDB[0].quantity,
+            i.id_ingredient,
+          ]);
       })
     );
   } catch (err) {
