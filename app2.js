@@ -43,6 +43,9 @@ app.use('/planning', planningRouter);
 const shoppingListRouter = express.Router();
 app.use('/shopping-list', shoppingListRouter);
 
+const suggestionRouter = express.Router();
+app.use('/suggestions', suggestionRouter);
+
 // Favorites :
 //Get Favorites
 favoritesRouter.get('/', (req, res) => {
@@ -164,20 +167,15 @@ shoppingListRouter.put('/', async (req, res) => {
     // console.log(ingredientsInDB);
 
     const userIngredients = req.body.ingredients;
-    console.log(userIngredients);
 
     const ingredientsToInsert = userIngredients.filter(
       (i) => !ingredientsInDB.map((iDB) => iDB.id).includes(i.foodId)
     );
 
-    console.log('ingredientsToInsert', ingredientsToInsert);
-
     const ingredientToInsertInList = userIngredients.filter(
       (i) => !listsInDB.map((iDB) => iDB.id_ingredient).includes(i.foodId)
     );
 
-    console.log('ingredient TO insert in List :', ingredientToInsertInList);
-    id_ingredien
     const updateQuantityInList = userIngredients.filter((i) =>
       listsInDB.map((iDB) => iDB.id_ingredient).includes(i.foodId)
     );
@@ -203,7 +201,6 @@ shoppingListRouter.put('/', async (req, res) => {
           )
       )
     );
-
     await Promise.all(
       updateQuantityInList.map((i) => {
         const iInDB = listsInDB.filter((j) => j.id_ingredient === i.foodId);
@@ -212,8 +209,9 @@ shoppingListRouter.put('/', async (req, res) => {
           .promise()
           .query('UPDATE listes SET quantity = ? WHERE id_ingredient = ?', [
             newQuantity,
-            i.id_ingredient,
-          ]);
+            i.foodId,
+          ])
+          .catch(console.error);
       })
     );
   } catch (err) {
@@ -232,6 +230,19 @@ shoppingListRouter.delete('/', (req, res) => {
     .catch((err) => {
       console.log(err);
       res.status(500).send('ERROR ON DELETE');
+    });
+});
+
+// SUGGESTION
+
+suggestionRouter.get('/', (req, res) => {
+  connection
+    .promise()
+    .query('SELECT * FROM suggestions')
+    .then(([results]) => {
+      console.log('get suggestions of the day : ', results);
+      res.status(200).send(results);
+    });
 });
 
 app.listen(port, () => console.log(`server listening on port ${port}`));
