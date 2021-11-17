@@ -182,23 +182,6 @@ shoppingListRouter.put('/', async (req, res) => {
       listsInDB.map((iDB) => iDB.id_ingredient).includes(i.foodId)
     );
 
-    // const newList = [];
-    // const updateQuantityInList = [];
-    // const newIngredients = [];
-    // addToList(
-    //   newList,
-    //   listsInDB,
-    //   req.body.ingredients,
-    //   updateQuantityInList,
-    //   newIngredients
-    // );
-
-    // const ingredientsToInsert = newIngredients.filter(
-    //   (i) => !ingredientsInDB.map((iDB) => iDB.id).includes(i.id)
-    // );
-    // console.log('new ingredients : ', newIngredients);
-    // console.log('ingredients To Insert : ', ingredientsToInsert);
-
     await Promise.all(
       ingredientsToInsert.map((i) =>
         connection
@@ -224,13 +207,11 @@ shoppingListRouter.put('/', async (req, res) => {
     await Promise.all(
       updateQuantityInList.map((i) => {
         const iInDB = listsInDB.filter((j) => j.id_ingredient === i.foodId);
-        console.log('iINDB HEEEEEELLLLO WORLD : ', iInDB[0].quantity);
         const newQuantity = i.quantity + iInDB[0].quantity;
-        console.log('QUAAAAANTITY : ', newQuantity);
         return connection
           .promise()
           .query('UPDATE listes SET quantity = ? WHERE id_ingredient = ?', [
-            i.quantity + iInDB[0].quantity,
+            newQuantity,
             i.id_ingredient,
           ]);
       })
@@ -241,38 +222,21 @@ shoppingListRouter.put('/', async (req, res) => {
   }
 });
 
+shoppingListRouter.delete('/', (req, res) => {
+  connection
+    .promise()
+    .query(
+      'SELECT l.*, i.name, i.image, i.measure FROM listes AS l INNER JOIN ingredients AS i ON l.id_ingredient = i.id'
+    )
+    .then(([results]) => {
+      console.log('select all from listes :', results[0]);
+      res.status(200).json(results);
+    });
+});
+
 app.listen(port, () => console.log(`server listening on port ${port}`));
 
 // Function
-
-const addToList = (newList, oldList, reqBody, quantityList, newIngredients) => {
-  for (let i = 0; i < reqBody.length; i++) {
-    for (let oldI = 0; oldI < oldList.length; oldI++) {
-      if (oldList[oldI].id_ingredient === reqBody[i].foodId) {
-        quantityList.push({
-          date: '2021-11-16',
-          user_id: 1,
-          id_ingredient: oldList[oldI].id_ingredient,
-          quantity: oldList[oldI].quantity + reqBody[i].quantity,
-        });
-      } else {
-        newList.push({
-          date: '2021-11-16',
-          user_id: 1,
-          id_ingredient: reqBody[i].foodId,
-          quantity: reqBody[i].quantity,
-        });
-        newIngredients.push({
-          id: reqBody[i].foodId,
-          name: reqBody[i].food,
-          measure: reqBody[i].measure,
-          category: reqBody[i].foodCategory,
-          image: reqBody[i].image,
-        });
-      }
-    }
-  }
-};
 
 // shoppingListRouter.put('/', (req, res) => {
 //     console.log(req.body.ingredients);
