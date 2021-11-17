@@ -177,7 +177,7 @@ shoppingListRouter.put('/', async (req, res) => {
     );
 
     console.log('ingredient TO insert in List :', ingredientToInsertInList);
-
+    id_ingredien
     const updateQuantityInList = userIngredients.filter((i) =>
       listsInDB.map((iDB) => iDB.id_ingredient).includes(i.foodId)
     );
@@ -225,13 +225,13 @@ shoppingListRouter.put('/', async (req, res) => {
 shoppingListRouter.delete('/', (req, res) => {
   connection
     .promise()
-    .query(
-      'SELECT l.*, i.name, i.image, i.measure FROM listes AS l INNER JOIN ingredients AS i ON l.id_ingredient = i.id'
-    )
+    .query('DELETE FROM listes WHERE ?', [i.id_ingredient])
     .then(([results]) => {
-      console.log('select all from listes :', results[0]);
       res.status(200).json(results);
-    });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send('ERROR ON DELETE');
 });
 
 app.listen(port, () => console.log(`server listening on port ${port}`));
@@ -262,4 +262,3 @@ app.listen(port, () => console.log(`server listening on port ${port}`));
 //             })
 //         ])
 //       });
-//   });
