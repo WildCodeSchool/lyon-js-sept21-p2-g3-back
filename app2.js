@@ -40,6 +40,9 @@ app.use('/favorites', favoritesRouter);
 const planningRouter = express.Router();
 app.use('/planning', planningRouter);
 
+const shoppingListRouter = express.Router();
+app.use('/shopping-list', shoppingListRouter);
+
 // Favorites :
 //Get Favorites
 favoritesRouter.get('/', (req, res) => {
@@ -99,7 +102,7 @@ planningRouter.post('/', (req, res) => {
   connection
     .promise()
     .query(
-      'INSERT INTO planning (user_id, date, lunch, dinner, id_recipe, image, label) VALUES (?,?,?,?,?, ?,?)',
+      'INSERT INTO planning (user_id, date, lunch, dinner, id_recipe, image, label) VALUES (?,?,?,?,?, ?,?); ',
       [
         1,
         req.body.date,
@@ -123,7 +126,7 @@ planningRouter.post('/', (req, res) => {
 planningRouter.get('/', (req, res) => {
   connection
     .promise()
-    .query('SELECT * FROM planning')
+    .query('SELECT * FROM planning ORDER BY date ASC')
     .then(([results]) => {
       console.log('select all from planning');
       res.status(200).json(results);
@@ -135,4 +138,138 @@ planningRouter.get('/', (req, res) => {
     });
 });
 
+// Liste d'ingrédients
+
+shoppingListRouter.get('/', (req, res) => {
+  connection
+    .promise()
+    .query(
+      'SELECT l.*, i.name, i.image, i.measure FROM listes AS l INNER JOIN ingredients AS i ON l.id_ingredient = i.id'
+    )
+    .then(([results]) => {
+      console.log('select all from listes :', results[0]);
+      res.status(200).json(results);
+    });
+});
+
+shoppingListRouter.put('/', async (req, res) => {
+  try {
+    const [listsInDB] = await connection
+      .promise()
+      .query('SELECT * FROM listes');
+    console.log(listsInDB);
+    const [ingredientsInDB] = await connection
+      .promise()
+      .query('SELECT * FROM ingredients');
+    console.log(ingredientsInDB);
+    const newList = [];
+    const updateQuantityInList = [];
+    const newIngredients = [];
+    addToList(
+      newList,
+      listsInDB,
+      req.body.ingredients,
+      updateQuantityInList,
+      newIngredients
+    );
+
+    const ingredientsToInsert = newIngredients.filter(
+      (i) => !ingredientsInDB.map((iDB) => iDB.id).includes(i.id)
+    );
+    console.log('new ingredients : ', newIngredients);
+    console.log('ingredients To Insert : ', ingredientsToInsert);
+
+    await Promise.all(
+      ingredientsToInsert.map((i) =>
+        connection
+          .promise()
+          .query(
+            'INSERT INTO ingredients (id, name, measure, category, image) VALUES (?, ?, ?, ?, ?)',
+            [i.id, i.name, i.measure, i.category, i.image]
+          )
+      )
+    );
+
+    await Promise.all(
+      newList.map((i) =>
+        connection
+          .promise()
+          .query(
+            'INSERT INTO listes (date, user_id, id_ingredient, quantity) VALUES (?, ?, ?, ?)',
+            ['2021-11-16', 1, i.id_ingredient, i.quantity]
+          )
+      )
+    );
+
+    await Promise.all(
+      updateQuantityInList.map((i) => {
+        connection.promise.query(
+          'UPDATE listes SET quantity = ? WHERE id_ingredient = ?',
+          [i.quantity, i.id_ingredient]
+        );
+      })
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
 app.listen(port, () => console.log(`server listening on port ${port}`));
+
+// Function
+
+const addToList = (newList, oldList, reqBody, quantityList, newIngredients) => {
+  for (let i = 0; i < reqBody.length; i++) {
+    for (let oldI = 0; oldI < oldList.length; oldI++) {
+      if (oldList[oldI].id_ingredient === reqBody[i].foodId) {
+        quantityList.push({
+          date: '2021-11-16',
+          user_id: 1,
+          id_ingredient: oldList[oldI].id_ingredient,
+          quantity: oldList[oldI].quantity + reqBody[i].quantity,
+        });
+      } else {
+        newList.push({
+          date: '2021-11-16',
+          user_id: 1,
+          id_ingredient: reqBody[i].foodId,
+          quantity: reqBody[i].quantity,
+        });
+        newIngredients.push({
+          id: reqBody[i].foodId,
+          name: reqBody[i].food,
+          measure: reqBody[i].measure,
+          category: reqBody[i].foodCategory,
+          image: reqBody[i].image,
+        });
+      }
+    }
+  }
+};
+
+// shoppingListRouter.put('/', (req, res) => {
+//     console.log(req.body.ingredients);
+//     connection
+//       .promise()
+//       .query('SELECT * FROM listes')
+//       .then(([lists]) => {
+//         console.log(lists);
+//         const listIngredients = lists;
+//         const newIngredients = [];
+//         const updateQuantityInList = [];
+//         const newList = [];
+//         addToList(
+//           newList,
+//           listIngredients,
+//           req.body.ingredients,
+//           updateQuantityInList,
+//           newIngredients
+//         );
+//         return Promise.all([
+//             newIngredients.map((i) => {
+//                 return connection.promise().query('')
+//             })
+//         ])
+//       });
+//   });

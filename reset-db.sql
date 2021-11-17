@@ -18,7 +18,7 @@ INSERT INTO `users` (id, firstname, lastname, email) VALUES (1, 'pedro', 'gentho
 CREATE TABLE `ingredients` (
 	`id` VARCHAR(255) NOT NULL, 
 	`name` VARCHAR(255) NOT NULL, 
-	`measure`VARCHAR(255) NOT NULL, 
+	`measure`VARCHAR(255), 
 	`category` VARCHAR(255), 
 	`image` VARCHAR(1000),
 	PRIMARY KEY (`id`)	
