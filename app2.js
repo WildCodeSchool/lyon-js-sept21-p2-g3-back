@@ -133,7 +133,6 @@ planningRouter.get('/', (req, res) => {
     .then(([results]) => {
       console.log('select all from planning');
       res.status(200).json(results);
-      res.status(200).send('get recipe from planning');
     })
     .catch((err) => {
       console.log(err);
@@ -165,8 +164,19 @@ shoppingListRouter.put('/', async (req, res) => {
       .promise()
       .query('SELECT * FROM ingredients');
     // console.log(ingredientsInDB);
+    console.log('userIngredients before :', req.body.ingredients);
+    const userIngredientsNotFiltered = req.body.ingredients;
 
-    const userIngredients = req.body.ingredients;
+    const userIngredients = userIngredientsNotFiltered.reduce(
+      (filtered, ingredient) => {
+        if (!filtered.find((i) => i.foodId === ingredient.foodId)) {
+          return [...filtered, ingredient];
+        }
+        return filtered;
+      },
+      []
+    );
+    console.log('userIngredients after :', userIngredients);
 
     const ingredientsToInsert = userIngredients.filter(
       (i) => !ingredientsInDB.map((iDB) => iDB.id).includes(i.foodId)
