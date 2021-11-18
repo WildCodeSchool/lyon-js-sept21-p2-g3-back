@@ -156,6 +156,26 @@ planningRouter.get('/', (req, res) => {
     });
 });
 
+planningRouter.delete('/', (req, res) => {
+  console.log('req.body :', req.body);
+  console.log('date : ', moment(req.body.date).format('YYYY-MM-DD'));
+  connection
+    .promise()
+    .query(
+      'DELETE FROM planning WHERE id_recipe = ? AND date = ? AND diner = ? AND lunch = ?',
+      [
+        req.body.id_recipe,
+        moment(req.body.date).format('YYYY-MM-DD'),
+        req.body.diner,
+        req.body.lunch,
+      ]
+    )
+    .then(() => {
+      console.log('Meal deleted ');
+      res.status(204).send('Meal deleted !');
+    });
+});
+
 // Liste d'ingrédients
 
 shoppingListRouter.get('/', (req, res) => {
