@@ -150,7 +150,7 @@ shoppingListRouter.get('/', (req, res) => {
       'SELECT l.*, i.name, i.image, i.measure FROM listes AS l INNER JOIN ingredients AS i ON l.id_ingredient = i.id'
     )
     .then(([results]) => {
-      console.log('select all from listes :', results[0]);
+      console.log('select all from listes :', results);
       res.status(200).json(results);
     });
 });
@@ -220,17 +220,24 @@ shoppingListRouter.put('/', async (req, res) => {
   }
 });
 
-shoppingListRouter.delete('/', (req, res) => {
-  connection
-    .promise()
-    .query('DELETE FROM listes WHERE ?', [i.id_ingredient])
-    .then(([results]) => {
-      res.status(200).json(results);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send('ERROR ON DELETE');
-    });
+shoppingListRouter.delete('/', async (req, res) => {
+  try {
+    const ingredientToDelete = req.body.ingredientToDelete;
+    console.log('ingredient to delete : ', req.body);
+    await Promise.all(
+      ingredientToDelete.map((id) => {
+        return connection
+          .promise()
+          .query('DELETE FROM listes WHERE id_ingredient=?', [id])
+          .then(([results]) => {
+            res.status(200).json(results);
+          });
+      })
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
 });
 
 // SUGGESTION
