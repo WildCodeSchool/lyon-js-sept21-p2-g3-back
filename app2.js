@@ -103,29 +103,41 @@ favoritesRouter.delete('/:id', (req, res) => {
 
 //Planning
 
-planningRouter.post('/', (req, res) => {
-  connection
-    .promise()
-    .query(
-      'INSERT INTO planning (user_id, date, lunch, diner, id_recipe, image, label) VALUES (?,?,?,?,?, ?,?); ',
-      [
-        1,
-        req.body.date,
-        req.body.lunch,
-        req.body.diner,
-        req.body.id,
-        req.body.image,
-        req.body.label,
-      ]
-    )
-    .then(([results]) => {
-      console.log('insert into planning', results);
-      res.status(200).send('recipe insert into planning');
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send('error when adding recipe to planning');
-    });
+planningRouter.post('/', async (req, res) => {
+  try {
+    const isInPlanning = await connection
+      .promise()
+      .query(
+        'SELECT * FROM planning WHERE date = ? AND diner = ? AND lunch = ?',
+        [req.body.date, req.body.diner, req.body.lunch]
+      );
+    console.log(isInPlanning);
+    if (isInPlanning[0].length === 0) {
+      connection
+        .promise()
+        .query(
+          'INSERT INTO planning (user_id, date, lunch, diner, id_recipe, image, label) VALUES (?,?,?,?,?, ?,?); ',
+          [
+            1,
+            req.body.date,
+            req.body.lunch,
+            req.body.diner,
+            req.body.id,
+            req.body.image,
+            req.body.label,
+          ]
+        )
+        .then(([results]) => {
+          console.log('insert into planning', results);
+          res.status(200).send('recipe insert into planning');
+        });
+    } else {
+      res.status(409).send('A meal is already saved for this time !');
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('error when adding recipe to planning');
+  }
 });
 
 planningRouter.get('/', (req, res) => {
