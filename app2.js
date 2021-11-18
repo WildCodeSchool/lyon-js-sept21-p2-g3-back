@@ -5,8 +5,10 @@ const connection = require('./db-config');
 const cors = require('cors');
 const express = require('express');
 const router = express.Router();
-
+const moment = require('moment');
 // Connection
+
+console.log(moment().format());
 
 const port = process.env.PORT || 3000;
 
@@ -129,7 +131,9 @@ planningRouter.post('/', (req, res) => {
 planningRouter.get('/', (req, res) => {
   connection
     .promise()
-    .query('SELECT * FROM planning ORDER BY date ASC')
+    .query('SELECT * FROM planning WHERE date >= ?  ORDER BY date ASC', [
+      moment().format(),
+    ])
     .then(([results]) => {
       console.log('select all from planning');
       res.status(200).json(results);
