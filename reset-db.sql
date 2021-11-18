@@ -48,12 +48,12 @@ CREATE TABLE `planning` (
 	`user_id` INT NOT NULL, 
 	`date` DATE NOT NULL, 
     `lunch` BOOLEAN NOT NULL,
-    `dinner` BOOLEAN NOT NULL,  
+    `diner` BOOLEAN NOT NULL,  
 	`id_recipe` VARCHAR(255) NOT NULL,
     `image` VARCHAR(1000) NOT NULL,  
     `label` VARCHAR(255) NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES users(`id`), 
-	PRIMARY KEY (`user_id`, `date`, `lunch`, `dinner`)	
+	PRIMARY KEY (`user_id`, `date`, `lunch`, `diner`)	
 );
 
 CREATE TABLE `suggestions` (

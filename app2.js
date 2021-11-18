@@ -105,7 +105,7 @@ planningRouter.post('/', (req, res) => {
   connection
     .promise()
     .query(
-      'INSERT INTO planning (user_id, date, lunch, dinner, id_recipe, image, label) VALUES (?,?,?,?,?, ?,?); ',
+      'INSERT INTO planning (user_id, date, lunch, diner, id_recipe, image, label) VALUES (?,?,?,?,?, ?,?); ',
       [
         1,
         req.body.date,
