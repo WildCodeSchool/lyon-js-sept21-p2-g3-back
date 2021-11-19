@@ -1,11 +1,11 @@
+/* eslint-disable */
 // Importation
 require('dotenv').config();
-const moment = require('moment');
+const connection = require('./db-config');
 const cors = require('cors');
 const express = require('express');
 const router = express.Router();
-const connection = require('./db-config');
-
+const moment = require('moment');
 // Connection
 
 console.log(moment().format());
@@ -49,7 +49,7 @@ const suggestionRouter = express.Router();
 app.use('/suggestions', suggestionRouter);
 
 // Favorites :
-// Get Favorites
+//Get Favorites
 favoritesRouter.get('/', (req, res) => {
   connection
     .promise()
@@ -67,7 +67,7 @@ favoritesRouter.get('/', (req, res) => {
 // Post Favorites
 
 favoritesRouter.post('/:id', (req, res) => {
-  const { id } = req.params;
+  const id = req.params.id;
   const { image, label } = req.body;
   console.log('post favorites', req.body);
   connection
@@ -87,7 +87,7 @@ favoritesRouter.post('/:id', (req, res) => {
 });
 
 favoritesRouter.delete('/:id', (req, res) => {
-  const { id } = req.params;
+  const id = req.params.id;
   connection
     .promise()
     .query('DELETE FROM favorites WHERE id_recipe = ?', [id])
@@ -101,7 +101,7 @@ favoritesRouter.delete('/:id', (req, res) => {
     });
 });
 
-// Planning
+//Planning
 
 planningRouter.post('/', async (req, res) => {
   try {
@@ -260,6 +260,7 @@ shoppingListRouter.put('/', async (req, res) => {
           .catch(console.error);
       })
     );
+    res.sendStatus(200);
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
@@ -268,18 +269,16 @@ shoppingListRouter.put('/', async (req, res) => {
 
 shoppingListRouter.delete('/', async (req, res) => {
   try {
-    const { ingredientToDelete } = req.body;
+    const ingredientToDelete = req.body.ingredientToDelete;
     console.log('ingredient to delete : ', req.body);
     await Promise.all(
       ingredientToDelete.map((id) => {
         return connection
           .promise()
-          .query('DELETE FROM listes WHERE id_ingredient=?', [id])
-          .then(([results]) => {
-            res.status(200).json(results);
-          });
+          .query('DELETE FROM listes WHERE id_ingredient=?', [id]);
       })
     );
+    res.sendStatus(204);
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
@@ -299,3 +298,30 @@ suggestionRouter.get('/', (req, res) => {
 });
 
 app.listen(port, () => console.log(`server listening on port ${port}`));
+
+// Function
+
+// shoppingListRouter.put('/', (req, res) => {
+//     console.log(req.body.ingredients);
+//     connection
+//       .promise()
+//       .query('SELECT * FROM listes')
+//       .then(([lists]) => {
+//         console.log(lists);
+//         const listIngredients = lists;
+//         const newIngredients = [];
+//         const updateQuantityInList = [];
+//         const newList = [];
+//         addToList(
+//           newList,
+//           listIngredients,
+//           req.body.ingredients,
+//           updateQuantityInList,
+//           newIngredients
+//         );
+//         return Promise.all([
+//             newIngredients.map((i) => {
+//                 return connection.promise().query('')
+//             })
+//         ])
+//       });
